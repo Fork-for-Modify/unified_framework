@@ -10,11 +10,11 @@ from tqdm import tqdm
 
 ## params
 # path
-img_dir = "./outputs/code_dev/BDNeRV_RC/test/2023-04-14_11-25-50/zout"
+img_dir = "./outputs/code_dev/BDNeRV_RC/test/2023-04-24_09-56-16/zout"
 save_path = "./test_vid.mp4"  # .gif / .avi / .mp4
 
 # Set the starting and ending image numbers to read
-start = 460
+start = 0
 end = -1  # -1 for all
 
 # Set the frame size

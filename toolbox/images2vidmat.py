@@ -13,12 +13,12 @@ from einops import rearrange
 
 # %% Param setting
 # path
-img_dirs = ["./outputs/code_dev/BDNeRV_RC/test/2023-04-14_11-25-50/ce",
-            "./outputs/code_dev/BDNeRV_RC/test/2023-04-14_11-25-50/zout"]
+img_dirs = ["outputs/code_dev/BDNeRV_RC/test/2023-04-24_08-54-24/ce",
+            "outputs/code_dev/BDNeRV_RC/test/2023-04-24_08-54-24/out"]
 save_path = "./test.mp4"  # .gif / .avi / .mp4
 
 # Set the starting and ending image numbers to read
-starts = [60, 480]
+starts = [0, 0]
 ends = [-1, -1]  # -1 for all
 # ends = [-1, -1, -1, -1]  # -1 for all
 

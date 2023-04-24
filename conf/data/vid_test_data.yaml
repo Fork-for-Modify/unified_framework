@@ -3,15 +3,14 @@ _target_: srcs.data_loader._my_video_data_loaders.get_data_loaders
 ## BBNCT
 # data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/small_test/ # video for debug
 # data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/mini_test/ # video for debug
-# data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/train/  # video
-# data_dir: /ssd/0/zzh/dataset/DAVIS-2017-Unsupervised-trainval/full_resolution/ # video
+data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/test/  # video
 ## BBNCR
 # data_dir: /data/zzh/dataset/CV/GoPro/GOPRO_Large_all/mini_test/ # video for debug
 # data_dir: /data/zzh/dataset/CV/GoPro/GOPRO_Large_all/small_test/ # video for debug
 # data_dir: /data/zzh/dataset/CV/GoPro/GOPRO_Large_all/train/  # video
 ## BBNCX
 # data_dir: /hdd/0/zzh/dataset/GoPro/GOPRO_Large_all/small_test/
-data_dir: /hdd/0/zzh/dataset/GoPro/GOPRO_Large_all/test/
+# data_dir: /hdd/0/zzh/dataset/GoPro/GOPRO_Large_all/test/
 # data_dir: /hdd/1/zzh/project/blur_decomposition/data/jelly/
 
 frame_num: ${frame_n}

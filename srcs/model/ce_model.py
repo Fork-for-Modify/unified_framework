@@ -70,4 +70,5 @@ class CEBlurNet(nn.Module):
         ce_blur_img_noisy = ce_blur_img + torch.tensor(noise_level, device=device) * \
             torch.randn(ce_blur_img.shape, device=device)
 
-        return ce_blur_img_noisy, self.time_idx.to(device), ce_code_up, ce_blur_img
+        return ce_blur_img_noisy, self.time_idx.to(device), ce_code, ce_blur_img # zzh: ce_code_up->ce_code
+

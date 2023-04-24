@@ -99,6 +99,7 @@ class Trainer(BaseTrainer):
         """
         self.model.train()
         self.train_metrics.reset()
+        interp_scale = self.model.frame_n//self.model.ce_code_n
         # control ce code optimization epoch
         if self.opt_cecode and (self.ce_opt_epoch is not None):
             if self.ce_opt_epoch[0] <= epoch <= self.ce_opt_epoch[1]:
@@ -109,10 +110,11 @@ class Trainer(BaseTrainer):
                 f'Current CE Opt: {self.model.BlurNet.ce_weight.requires_grad}')
 
         for batch_idx, vid in enumerate(self.data_loader):  # video_dataloader
+            
             vid = vid.to(self.device)
             output, data, data_noisy = self.model(vid)
             output_ = torch.flatten(output, end_dim=1)
-            vid_ = torch.flatten(vid, end_dim=1)
+            vid_ = torch.flatten(vid[::interp_scale], end_dim=1)
 
             # loss calc
             loss = 0

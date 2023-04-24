@@ -56,6 +56,7 @@ def test_worker(gpus, config):
 
     # setup data_loader instances
     data_loader = instantiate(config.test_data_loader)
+    
 
     # test
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -71,6 +72,7 @@ def test(data_loader, model,  device, criterion, metrics, config):
 
     # init
     model = model.to(device)
+    interp_scale = model.get('frame_n', 8)//model.get('ce_code_n', 8)
 
     # inference time test
     # input_shape = (1, 32, 3, 256, 256)  # test image size
@@ -135,7 +137,7 @@ def test(data_loader, model,  device, criterion, metrics, config):
 
             # computing loss, metrics on test set
             output_all = torch.flatten(output, end_dim=1)
-            vid_all = torch.flatten(vid, end_dim=1)
+            vid_all = torch.flatten(vid[::interp_scale], end_dim=1)
             loss = criterion(output_all, vid_all)
             batch_size = data.shape[0]
             total_loss += loss.item() * batch_size

@@ -11,14 +11,14 @@ exp_name: code_dev/BDNeRV_RC  # experiment name: phpnet
 trainer_name: cebd_trainer # trainer name
 status: train       # run status: train|test|debug
 resume_conf:  # resume configuration, default=[epoch, optimizer]
-resume: /ssd/0/zzh/tmp/CEBD/outputs/code_dev/BDNeRV_RC/train/2023-04-21_10-42-42/checkpoints/model_latest.pth # resuming checkpoint path (${hydra:runtime.cwd}/ )
+resume: # resuming checkpoint path (${hydra:runtime.cwd}/ )
 checkpoint_dir: checkpoints/   # models saving dir (relative to $dir)
 final_test_dir: final_test/    # final test result saving dir (relative to $dir)
 log_dir: events/   # log file save dir (relative to $dir)
 # outputs_dir:
 
 ##### run
-gpus: [5]                 # GPU used, [0,1] | empty (all gpu)
+gpus: [7]                 # GPU used, [0,1] | empty (all gpu)
 num_workers: 16            # number of cpu worker
 trainer:
   epochs: 500
@@ -36,7 +36,7 @@ trainer:
 sigma_range: [0,0.01] # train noise
 test_sigma_range: 0 # test noise
 ce_opt_epoch: # [200, 400]
-frame_n: 8 # 32,64
+frame_n: 64 # 8,64
 # light_throughput: 0.5
 
 ##### metrics

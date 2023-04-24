@@ -10,6 +10,8 @@ class CEBDNet(nn.Module):
     '''
     def __init__(self, sigma_range=0, test_sigma_range=None, ce_code_n=8, frame_n=8, ce_code_init=None, opt_cecode=False, ce_net=None, binary_fc=None, bd_net=None):
         super(CEBDNet, self).__init__()
+        self.ce_code_n = ce_code_n
+        self.frame_n = frame_n
         # coded exposure blur net
         if ce_net == 'CEBlurNet':
             self.BlurNet = CEBlurNet(
@@ -28,7 +30,7 @@ class CEBDNet(nn.Module):
             raise NotImplementedError(f'No model named {bd_net}')
 
     def forward(self, frames):
-        ce_blur_img_noisy, time_idx, ce_code_up, ce_blur_img = self.BlurNet(
+        ce_blur_img_noisy, time_idx, ce_code, ce_blur_img = self.BlurNet(
             frames)
-        output = self.DeBlurNet(ce_blur_img_noisy, time_idx, ce_code_up)
+        output = self.DeBlurNet(ce_blur_img_noisy, time_idx, ce_code)
         return output, ce_blur_img, ce_blur_img_noisy

@@ -7,8 +7,8 @@ arch:
   ce_code_n: 8
   frame_n: ${frame_n}
   # ce_code_init: [1,1,1,1,1,1,1,1] # all one
-  # ce_code_init: [1,1,1,0,0,1,0,1] # len8-03
-  ce_code_init: [1,0,1,1,1,0,0,1] # len8-03-2
+  ce_code_init: [1,1,1,0,0,1,0,1] # len8-03
+  # ce_code_init: [1,0,1,1,1,0,0,1] # len8-03-2
   # ce_code_init: [1,1,1,1,1,0,0,1] # len8-02
   opt_cecode: False
   ce_net: CEBlurNet

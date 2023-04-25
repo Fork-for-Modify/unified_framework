@@ -17,13 +17,13 @@ hydra:
 exp_name: code_dev/BDNeRV_RC  # experiment name
 tester_name: cebd_tester # tester name: cebd_realtester | cebd_tester
 status: test       # run status: train|test|real_test
-checkpoint: ${hydra:runtime.cwd}/outputs/code_dev/BDNeRV_RC/train/2023-04-23_16-30-56/checkpoints/model_latest.pth  # loading checkpoint ${hydra:runtime.cwd}
+checkpoint: ${hydra:runtime.cwd}/outputs/code_dev/BDNeRV_RC/record/2023-04-23_16-30-56/checkpoints/model_latest.pth  # loading checkpoint ${hydra:runtime.cwd}
 outputs_dir: outputs/
 
 ##### run
-gpus: [6]           # GPU used, Warning: Only one GPU is supported for 'test' now
-num_workers: 16      # number of cpu worker
-save_img: false      # save the reconstructed images
+gpus: [7]           # GPU used, Warning: Only one GPU is supported for 'test' now
+num_workers: 4      # number of cpu worker
+save_img: true      # save the reconstructed images
 
 # params
 sigma_range: 0

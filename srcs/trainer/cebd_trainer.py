@@ -8,8 +8,8 @@ from srcs.utils.util import collect, instantiate, get_logger
 from srcs.logger import BatchMetrics
 import torch.nn.functional as F
 from functools import reduce
-import kornia
-from ptflops import get_model_complexity_info
+# import kornia
+# from ptflops import get_model_complexity_info
 from srcs.model._basic_binary_modules import STEBinary_fc
 
 #======================================
@@ -112,14 +112,16 @@ class Trainer(BaseTrainer):
         for batch_idx, vid in enumerate(self.data_loader):  # video_dataloader
             
             vid = vid.to(self.device)
+            target = vid[:,::interp_scale]
+
             output, data, data_noisy = self.model(vid)
             output_ = torch.flatten(output, end_dim=1)
-            vid_ = torch.flatten(vid[::interp_scale], end_dim=1)
+            target_ = torch.flatten(target, end_dim=1)
 
             # loss calc
             loss = 0
             # main loss
-            loss = loss + self.criterion(output_, vid_)
+            loss = loss + self.criterion(output_, target_)
             # for level in range(self.n_levels):
             #     loss = loss + self.criterion(output_, target_)
 
@@ -159,25 +161,30 @@ class Trainer(BaseTrainer):
                 for met in self.metric_ftns:
                     if self.config.n_gpu > 1:
                         # average metric between processes
-                        metric_v = collect(met(output_, vid_))
+                        metric_v = collect(met(output_, target_))
                     else:
                         # print(output.shape, target.shape)
-                        metric_v = met(output_, vid_)
+                        metric_v = met(output_, target_)
                     iter_metrics.update({met.__name__: metric_v})
 
                 # iter images
-                # frame_num = output.shape[1]
-                # image_tensors = {
-                #     'input': data_noisy[0, ...], 'output': output[0,0::frame_num//4, ...], 'target': vid[0,0::frame_num//4, ...]}
-                image_tensors = {} # donnot save image in tensorboard in training epoch to save space
+                frame_num = output.shape[1]
+                image_tensors = {
+                    'input': data_noisy[0, ...], 'output': output[0,0::frame_num//4, ...], 'target': target[0,0::frame_num//4, ...]}
+                # image_tensors = {} # donnot save image in tensorboard in training epoch to save space
                 # aftet iter hook
                 self._after_iter(epoch, batch_idx, 'train',
-                                 loss, iter_metrics, image_tensors)
+                                 loss, iter_metrics, {})
                 # iter log
                 self.logger.info(
                     f'Train Epoch: {epoch} {self._progress(batch_idx)} Loss: {loss:.6f} Lr: {self.optimizer.param_groups[0]["lr"]:.3e}')
 
-            if batch_idx == self.limit_train_iters:
+            if (batch_idx+1) == self.limit_train_iters:
+                # save demo images to tensorboard after trainig epoch
+                self.writer.set_step(epoch)
+                for k, v in image_tensors.items():
+                    self.writer.add_image(
+                        f'train/{k}', make_grid(image_tensors[k][0:8, ...].cpu(), nrow=2, normalize=True))
                 break
         log = self.train_metrics.result()
 
@@ -204,6 +211,7 @@ class Trainer(BaseTrainer):
         :return: A log that contains information about validation
         """
         self.model.eval()
+        interp_scale = self.model.frame_n//self.model.ce_code_n
         self.valid_metrics.reset()
         with torch.no_grad():
             # show ce code update when ceopt
@@ -217,36 +225,42 @@ class Trainer(BaseTrainer):
 
             for batch_idx, vid in enumerate(self.valid_data_loader):
                 vid = vid.to(self.device)
+                target = vid[:,::interp_scale]
 
                 # forward
                 output, data, data_noisy = self.model(vid)
                 output_ = torch.flatten(output, end_dim=1)
-                vid_ = torch.flatten(vid, end_dim=1)
+                target_ = torch.flatten(target, end_dim=1)
 
                 # loss
-                loss = self.criterion(output_, vid_)
+                loss = self.criterion(output_, target_)
 
                 # iter metrics
                 iter_metrics = {}
                 for met in self.metric_ftns:
                     if self.config.n_gpu > 1:
                         # average metric between processes
-                        metric_v = collect(met(output_, vid_))
+                        metric_v = collect(met(output_, target_))
                     else:
                         # print(output.shape, target.shape)
-                        metric_v = met(output_, vid_)
+                        metric_v = met(output_, target_)
                     iter_metrics.update({met.__name__: metric_v})
 
                 # iter images
                 frame_num = output.shape[1]
                 image_tensors = {
-                    'input': data_noisy[0, ...], 'output': output[0,0::frame_num//4, ...], 'target': vid[0,0::frame_num//4, ...]}
+                    'input': data_noisy[0, ...], 'output': output[0, 0::frame_num//4, ...], 'target': target[0, 0::frame_num//4, ...]}
 
                 # aftet iter hook
                 self._after_iter(epoch, batch_idx, 'valid',
-                                 loss, iter_metrics, image_tensors)
+                                 loss, iter_metrics, {})
 
-                if batch_idx == self.limit_valid_iters:
+                if (batch_idx+1) == self.limit_valid_iters:
+                    # save demo images to tensorboard after valid epoch
+                    self.writer.set_step(epoch)
+                    for k, v in image_tensors.items():
+                        self.writer.add_image(
+                            f'valid/{k}', make_grid(image_tensors[k][0:8, ...].cpu(), nrow=2, normalize=True))
                     break
 
         # add histogram of model parameters to the tensorboard

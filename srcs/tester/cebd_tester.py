@@ -72,7 +72,11 @@ def test(data_loader, model,  device, criterion, metrics, config):
 
     # init
     model = model.to(device)
-    interp_scale = model.get('frame_n', 8)//model.get('ce_code_n', 8)
+    interp_scale = getattr(model, 'frame_n', 8)//getattr(model, 'ce_code_n', 8)
+    if config.get('save_img', False):
+        os.makedirs(config.outputs_dir+'/output')
+        os.makedirs(config.outputs_dir+'/target')
+        os.makedirs(config.outputs_dir+'/input')
 
     # inference time test
     # input_shape = (1, 32, 3, 256, 256)  # test image size
@@ -125,24 +129,24 @@ def test(data_loader, model,  device, criterion, metrics, config):
                 for k, (in_img, out_img, gt_img) in enumerate(zip(data, output, vid)):
                     in_img = tensor2uint(in_img*scale_fc)
                     imsave(
-                        in_img, f'{config.outputs_dir}ce-blur#{i*N+k+1:04d}.jpg')
+                        in_img, f'{config.outputs_dir}input/ce-blur#{i*N+k+1:04d}.jpg')
                     for j in range(len(ce_code)):
                         out_img_j = tensor2uint(out_img[j])
                         gt_img_j = tensor2uint(gt_img[j])
                         imsave(
-                            out_img_j, f'{config.outputs_dir}out-frame#{i*N+k+1:04d}-{j+1:04d}.jpg')
+                            out_img_j, f'{config.outputs_dir}output/out-frame#{i*N+k+1:04d}-{j+1:04d}.jpg')
                         imsave(
-                            gt_img_j, f'{config.outputs_dir}gt-frame#{i*N+k+1:04d}-{j+1:04d}.jpg')
+                            gt_img_j, f'{config.outputs_dir}target/gt-frame#{i*N+k+1:04d}-{j+1:04d}.jpg')
                 # break  # save one image per batch
 
             # computing loss, metrics on test set
             output_all = torch.flatten(output, end_dim=1)
-            vid_all = torch.flatten(vid[::interp_scale], end_dim=1)
-            loss = criterion(output_all, vid_all)
+            target_all = torch.flatten(vid[:,::interp_scale], end_dim=1)
+            loss = criterion(output_all, target_all)
             batch_size = data.shape[0]
             total_loss += loss.item() * batch_size
             for i, metric in enumerate(metrics):
-                total_metrics[i] += metric(output_all, vid_all) * batch_size
+                total_metrics[i] += metric(output_all, target_all) * batch_size
     time_end = time.time()
     time_cost = time_end-time_start
     n_samples = len(data_loader.sampler)

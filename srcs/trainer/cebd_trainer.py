@@ -150,7 +150,7 @@ class Trainer(BaseTrainer):
             #     self.ce_optimizer.step()
 
             # iter record
-            if batch_idx % self.logging_step == 0 or batch_idx == self.limit_train_iters:
+            if batch_idx % self.logging_step == 0 or (batch_idx+1) == self.limit_train_iters:
                 # loss
                 loss_v = loss.item() if self.config.n_gpu == 1 else collect(loss)
                 self.writer.set_step(

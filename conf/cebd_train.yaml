@@ -18,7 +18,7 @@ log_dir: events/   # log file save dir (relative to $dir)
 # outputs_dir:
 
 ##### run
-gpus: [7]                 # GPU used, [0,1] | empty (all gpu)
+gpus: [6]                 # GPU used, [0,1] | empty (all gpu)
 num_workers: 4            # number of cpu worker
 trainer:
   epochs: 500
@@ -36,7 +36,7 @@ trainer:
 sigma_range: [0,0.01] # train noise
 test_sigma_range: 0 # test noise
 ce_opt_epoch: # [200, 400]
-frame_n: 64 # 8,64
+frame_n: 8 # 8,64
 # light_throughput: 0.5
 
 ##### metrics

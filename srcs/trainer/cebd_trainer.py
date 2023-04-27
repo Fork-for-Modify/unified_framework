@@ -111,7 +111,7 @@ class Trainer(BaseTrainer):
 
         for batch_idx, vid in enumerate(self.data_loader):  # video_dataloader
             
-            vid = vid.to(self.device)
+            vid = vid.to(self.device).float()/255 
             target = vid[:,::interp_scale]
 
             output, data, data_noisy = self.model(vid)
@@ -224,7 +224,7 @@ class Trainer(BaseTrainer):
                 self.logger.info('Current CE Code: ' + str(ce_code.tolist()))
 
             for batch_idx, vid in enumerate(self.valid_data_loader):
-                vid = vid.to(self.device)
+                vid = vid.to(self.device).float()/255
                 target = vid[:,::interp_scale]
 
                 # forward

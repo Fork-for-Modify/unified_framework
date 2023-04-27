@@ -3,8 +3,8 @@ _target_: srcs.data_loader._my_video_data_loaders.get_data_loaders
 ## BBNCT
 # data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/small_test/ # video for debug
 # data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/mini_test/ # video for debug
-# data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/train/  # video
-data_dir: /hhd/1/zzh/dataset/GoPro/GOPRO_Large_all_1920fps/train/  # video
+data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/train/  # video
+# data_dir: /hhd/1/zzh/dataset/GoPro/GOPRO_Large_all_1920fps/train/  # video
 ## BBNCR
 # data_dir: /data/zzh/dataset/CV/GoPro/GOPRO_Large_all/mini_test/ # video for debug
 # data_dir: /data/zzh/dataset/CV/GoPro/GOPRO_Large_all/small_test/ # video for debug
@@ -22,6 +22,6 @@ tform_op: 'all' # 'flip' | 'rotate' | 'reverse'
 status: 'train'
 shuffle: true
 num_workers: ${num_workers}
-pin_memory: False
+pin_memory: true
 prefetch_factor: 1
 all2CPU: false #

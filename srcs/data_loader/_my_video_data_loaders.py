@@ -43,7 +43,7 @@ def vid_transform(vid, prob=0.5, tform_op=['all']):
     if 'reverse' in tform_op or 'all' in tform_op:
         if np.random.rand() < prob:
             vid = vid[::-1, ...]
-
+    
     return vid.copy()
 
 # =================
@@ -77,7 +77,6 @@ class VideoFrame_Dataset(Dataset):
             if all(opif(vid_path) for vid_path in vid_paths):
                 # data_dir is an image dir rather than a vid dir
                 vid_paths = [data_dir]
-
         else:
             # multiple dataset
             for data_dir_n in sorted(data_dir):
@@ -124,7 +123,8 @@ class VideoFrame_Dataset(Dataset):
 
             vid.append(img_crop)
 
-        vid = np.array(vid, dtype=np.float32)/255  # [vid_num, h, w, c]
+        # list2ndarray, shape [vid_num, h, w, c], value 0-255
+        vid = np.array(vid)  
 
         # data augment
         if self.tform_op:
@@ -135,9 +135,14 @@ class VideoFrame_Dataset(Dataset):
             noise_level = self.sigma_range
         else:
             noise_level = np.random.uniform(*self.sigma_range)
-        vid = vid + np.random.normal(0, noise_level, vid.shape)
+        assert 0 <= noise_level <= 1, f'noise level (sigma_range) should be within 0-1, but get {self.sigma_range}'
+        if noise_level>0:
+            image_dtype = vid.dtype
+            image_maxv = np.iinfo(image_dtype).max  # 8/16 bit image -> 255/65535
+            vid = vid + np.random.normal(0, image_maxv*noise_level, vid.shape)
+            vid = vid.clip(0, image_maxv).astype(image_dtype)
 
-        return vid.transpose(0, 3, 1, 2).astype(np.float32)
+        return vid.transpose(0, 3, 1, 2)
 
     def __len__(self):
         return len(self.vid_idx)
@@ -204,7 +209,7 @@ class VideoFrame_Dataset_all2CPU(Dataset):
     def __getitem__(self, idx):
         # load video frames
         vid = self.imgs[self.vid_idx[idx]:self.vid_idx[idx]+self.vid_length]
-        vid = np.array(vid, dtype=np.float32)/255
+        vid = np.array(vid)
 
         img_sz = vid[0].shape
         # crop to patch size
@@ -224,14 +229,15 @@ class VideoFrame_Dataset_all2CPU(Dataset):
             noise_level = self.sigma_range
         else:
             noise_level = np.random.uniform(*self.sigma_range)
-        vid = vid + np.random.normal(0, noise_level, vid.shape)
+        assert 0 <= noise_level <= 1, f'noise level (sigma_range) should be within 0-1, but get {self.sigma_range}'
 
-        # [debug] test
-        # multi_imsave(vid*255, 'vid')
-        # cv2.imwrite('./outputs/tmp/test/coded_meas.jpg', coded_meas[:,:,::-1]*255)
-        # cv2.imwrite('./outputs/tmp/test/clear.jpg', sharp_img[:, :, ::-1]*255)
+        if noise_level>0:
+            image_dtype = vid.dtype
+            image_maxv = np.iinfo(image_dtype).max  # 8/16 bit image -> 255/65535
+            vid = vid + np.random.normal(0, image_maxv*noise_level, vid.shape)
+            vid = vid.clip(0, image_maxv).astype(image_dtype)
 
-        return vid.transpose(0, 3, 1, 2).astype(np.float32)
+        return vid.transpose(0, 3, 1, 2)
 
     def __len__(self):
         return len(self.vid_idx)
@@ -263,7 +269,7 @@ class Blurimg_RealExp_Dataset_all2CPU:
             self.imgs.append(img)
 
     def __getitem__(self, idx):
-        img = np.array(self.imgs[idx], dtype=np.float32)/255
+        img = np.array(self.imgs[idx])
         return img.transpose(2, 0, 1)
 
     def __len__(self):
@@ -334,5 +340,5 @@ if __name__ == '__main__':
     sys.path.append(os.path.dirname(__file__) + os.sep + '../')
     # from utils.utils_image_zzh import multi_imsave
 
-    data_dir = '/ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/small_test/'
+    data_dir = '/ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/mini_test/'
     # data_dir = '/ssd/2/zzh/dataset/GoPro/GOPRO_Large_all/small_te

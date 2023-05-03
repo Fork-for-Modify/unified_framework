@@ -7,7 +7,10 @@ test_outputs/
 local_note.txt
 tempCodeRunnerFile.py
 bak/
-
+*.mp4
+*.avi
+*.gif
+todo.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

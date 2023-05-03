@@ -13,8 +13,9 @@ from einops import rearrange
 
 # %% Param setting
 # path
-img_dirs = ["outputs/code_dev/BDNeRV_RC/test/2023-04-24_08-54-24/ce",
-            "outputs/code_dev/BDNeRV_RC/test/2023-04-24_08-54-24/out"]
+img_dirs = ["outputs/code_dev/BDNeRV_RC/test/2023-05-01_06-26-57/outputs/input",
+            "outputs/code_dev/BDNeRV_RC/test/2023-05-01_06-26-57/outputs/output"]
+# "outputs/code_dev/BDNeRV_RC/test/2023-05-01_05-51-33/outputs/target"
 save_path = "./test.mp4"  # .gif / .avi / .mp4
 
 # Set the starting and ending image numbers to read
@@ -30,7 +31,7 @@ n_row = 1  # number of rows in the montage
 # Set the frame rate and labels
 fps = 10
 show_frame_idx = True
-vid_labels = ['coded blur', 'output']
+vid_labels = ['ce', 'output'] # 'ce', 'output', 'gt'
 font_face, font_color, font_thickness, font_linetype = cv2.FONT_HERSHEY_SIMPLEX, (
     0, 0, 255), 1, cv2.LINE_AA
 

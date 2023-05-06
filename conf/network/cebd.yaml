@@ -7,21 +7,20 @@ arch:
   ce_code_n: 8
   frame_n: ${frame_n}
   # ce_code_init: [1,1,1,1,1,1,1,1] # all one
-  # ce_code_init: [1,1,1,0,0,1,0,1] # len8-03
+  ce_code_init: [1,1,1,0,0,1,0,1] # len8-03
   # ce_code_init: [1,0,1,1,1,0,0,1] # len8-02
   # ce_code_init: [1,1,1,1,1,1,0,0,0,0,1,1,0,0,1,1] # len16-01
-  ce_code_init: [1,0,1,0,1,0,1,1,1,1,1,1,0,0,0,1] # len16-02
-  opt_cecode: False
+  # ce_code_init: [1,0,1,0,1,0,1,1,1,1,1,1,0,0,0,1] # len16-02
+  opt_cecode: false
   ce_net: CEBlurNet
   binary_fc: STEBinary_fc
-  bd_net: BDNeRV_RC # BDNeRV | BDNeRV_RC | BDNeRV_BRC
-
+  bd_net: BDNeRV_RC # BDNeRV | BDNeRV_RC | BDNeRV_RC2 | BDNeRV_BRC
 
 loss:
   # _target_: srcs.loss._pix_loss_func.l1_loss
   _target_: srcs.loss._pix_loss_cls.WeightedLoss
-  # loss_conf_dict: {'CharbonnierLoss':1.0, 'EdgeLoss':0.05, 'fftLoss':0.01}
-  loss_conf_dict: {'CharbonnierLoss':1.0, 'EdgeLoss':0.1}
+  loss_conf_dict: {'CharbonnierLoss':1.0, 'EdgeLoss':0.05, 'fftLoss':0.01}
+  # loss_conf_dict: {'CharbonnierLoss':1.0, 'EdgeLoss':0.1}
 optimizer:
   # _target_: srcs.optimizer.adan.Adan
   # lr: !!float 5e-4

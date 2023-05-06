@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
-from srcs.model.bd_model import BDNeRV, BDNeRV_RC, BDNeRV_BRC
+from srcs.model.bd_model import BDNeRV, BDNeRV_RC, BDNeRV_RC2, BDNeRV_BRC
 from srcs.model.ce_model import CEBlurNet
 
 class CEBDNet(nn.Module):
@@ -24,6 +24,8 @@ class CEBDNet(nn.Module):
             self.DeBlurNet = BDNeRV()
         elif bd_net=='BDNeRV_RC':
             self.DeBlurNet = BDNeRV_RC()
+        elif bd_net == 'BDNeRV_RC2':
+            self.DeBlurNet = BDNeRV_RC2()
         elif bd_net == 'BDNeRV_BRC':
             self.DeBlurNet = BDNeRV_BRC()
         else:

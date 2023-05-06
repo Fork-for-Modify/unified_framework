@@ -13,6 +13,10 @@ data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/mini_test/ # video for debug
 # data_dir: /hdd/0/zzh/dataset/GoPro/GOPRO_Large_all/small_test/
 # data_dir: /hdd/0/zzh/dataset/GoPro/GOPRO_Large_all/test/
 # data_dir: /hdd/1/zzh/project/blur_decomposition/data/jelly/
+## BBNCA
+# data_dir: /ssd/zzh/dataset/GoPro/GOPRO_Large_all/small_test/
+# data_dir: /ssd/zzh/dataset/GoPro/GOPRO_Large_all/test/
+# data_dir: /ssd/zzh/dataset/GoPro/GOPRO_Large_all/train/
 
 frame_num: ${frame_n}
 batch_size: 2

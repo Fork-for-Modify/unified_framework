@@ -16,7 +16,7 @@ arch:
   binary_fc: STEBinary_fc
   bd_net: BDNeRV_RC # BDNeRV | BDNeRV_RC | BDNeRV_RC2 | BDNeRV_BRC
 
-loss: {'main_loss':1, 'reblur_loss':0.5} # main_loss, input_denoise_loss, forward_conv_loss
+loss: {'main_loss':1, 'reblur_loss':0.2} # main_loss, input_denoise_loss, forward_conv_loss
 main_loss:
   _target_: srcs.loss._pix_loss_cls.WeightedLoss
   loss_conf_dict: {'CharbonnierLoss':0.6, 'SSIMLoss':0.3, 'EdgeLoss':0.1}

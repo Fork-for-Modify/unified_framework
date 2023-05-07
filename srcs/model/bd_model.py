@@ -50,7 +50,7 @@ class BDNeRV(nn.Module):
                 for idx, code in zip(time_idx, ce_code)]
         t_pe = torch.cat(t_pe_, dim=0)  # [b, pos_l*2]
         t_embed = self.embed_mlp(t_pe) # [b, block_dim]
-        # t_manip = self.manip_mlp(t_pe) # MARK
+        # t_manip = self.manip_mlp(t_pe)
 
         # ce_blur feature
         ce_feature = self.feature(ce_blur) # [b, c, h, w]
@@ -124,7 +124,7 @@ class BDNeRV_RC(nn.Module):
                  for idx, code in zip(time_idx, ce_code)]
         t_pe = torch.cat(t_pe_, dim=0)  # [b, pos_l*2]
         t_embed = self.embed_mlp(t_pe)  # [b, block_dim]
-        # t_manip = self.manip_mlp(t_pe) # MARK
+        # t_manip = self.manip_mlp(t_pe)
 
         # ce_blur feature
         ce_feature = self.feature(ce_blur)  # [b, c, h, w]
@@ -210,7 +210,7 @@ class BDNeRV_RC2(nn.Module):
                  for idx, code in zip(time_idx, ce_code)]
         t_pe = torch.cat(t_pe_, dim=0)  # [b, pos_l*2]
         t_embed = self.embed_mlp(t_pe)  # [b, block_dim]
-        # t_manip = self.manip_mlp(t_pe) # MARK
+        # t_manip = self.manip_mlp(t_pe)
 
         # ce_blur feature
         ce_feature = self.feature_ce(ce_blur)  # [b, c, h, w]

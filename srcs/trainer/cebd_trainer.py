@@ -79,9 +79,9 @@ class Trainer(BaseTrainer):
     def _ce_reblur(self, output):
         # frame_n should equal to ce_code_n cases
         ce_weight = self.model.BlurNet.ce_weight.detach().squeeze()
-        ce_code = ((torch.sign(ce_weight)+1)/2).int()
+        ce_code = ((torch.sign(ce_weight)+1)/2)
         ce_code_ = torch.tensor(ce_code).view(1, -1, 1, 1, 1)
-        ce_output = torch.sum(torch.mul(output, ce_code_), dim=1)
+        ce_output = torch.sum(torch.mul(output, ce_code_), dim=1)/len(ce_code)
         return ce_output
     
     def _after_iter(self, epoch, batch_idx, phase, loss, metrics, image_tensors: dict):

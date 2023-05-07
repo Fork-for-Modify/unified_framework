@@ -16,18 +16,20 @@ arch:
   binary_fc: STEBinary_fc
   bd_net: BDNeRV_RC # BDNeRV | BDNeRV_RC | BDNeRV_RC2 | BDNeRV_BRC
 
-loss:
-  # _target_: srcs.loss._pix_loss_func.l1_loss
+loss: {'main_loss':1, 'reblur_loss':0.5} # main_loss, input_denoise_loss, forward_conv_loss
+main_loss:
   _target_: srcs.loss._pix_loss_cls.WeightedLoss
-  loss_conf_dict: {'CharbonnierLoss':1.0, 'EdgeLoss':0.05, 'fftLoss':0.01}
-  # loss_conf_dict: {'CharbonnierLoss':1.0, 'EdgeLoss':0.1}
+  loss_conf_dict: {'CharbonnierLoss':0.6, 'SSIMLoss':0.3, 'EdgeLoss':0.1}
+reblur_loss:
+  _target_: srcs.loss._pix_loss_cls.CharbonnierLoss
+
 optimizer:
-  # _target_: srcs.optimizer.adan.Adan
-  # lr: !!float 5e-4
-  _target_: torch.optim.Adam
-  lr: 2e-4
-  weight_decay: 0
-  amsgrad: true
+  _target_: srcs.optimizer.adan.Adan
+  lr: !!float 5e-4
+  # _target_: torch.optim.Adam
+  # lr: 2e-4
+  # weight_decay: 0
+  # amsgrad: true
 lr_scheduler:
   _target_: srcs.scheduler._base_scheduler.getGradualWarmupScheduler
   multiplier: 1

@@ -13,8 +13,8 @@ from einops import rearrange
 
 # %% Param setting
 # path
-img_dirs = ["outputs/code_dev/BDNeRV_RC/test/2023-05-01_06-26-57/outputs/input",
-            "outputs/code_dev/BDNeRV_RC/test/2023-05-01_06-26-57/outputs/output"]
+img_dirs = ["outputs/code_dev/BDNeRV_RC/test/2023-05-07_05-42-05/outputs/input",
+            "outputs/code_dev/BDNeRV_RC/test/2023-05-07_05-42-05/outputs/output"]
 # "outputs/code_dev/BDNeRV_RC/test/2023-05-01_05-51-33/outputs/target"
 save_path = "./test.mp4"  # .gif / .avi / .mp4
 

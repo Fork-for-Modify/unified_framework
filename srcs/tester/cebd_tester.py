@@ -51,7 +51,8 @@ def test_worker(gpus, config):
     model.BlurNet.test_sigma_range = config.test_sigma_range
 
     # instantiate loss and metrics
-    criterion = instantiate(loaded_config.loss, is_func=False)
+    # criterion = instantiate(loaded_config.loss, is_func=False)
+    criterion=None # don't calc loss in test
     metrics = [instantiate(met, is_func=True) for met in loaded_config.metrics]
 
     # setup data_loader instances
@@ -143,15 +144,15 @@ def test(data_loader, model,  device, criterion, metrics, config):
             # computing loss, metrics on test set
             output_all = torch.flatten(output, end_dim=1)
             target_all = torch.flatten(vid[:,::interp_scale], end_dim=1)
-            loss = criterion(output_all, target_all)
+            # loss = criterion(output_all, target_all)
             batch_size = data.shape[0]
-            total_loss += loss.item() * batch_size
+            # total_loss += loss.item() * batch_size
             for i, metric in enumerate(metrics):
                 total_metrics[i] += metric(output_all, target_all) * batch_size
     time_end = time.time()
     time_cost = time_end-time_start
     n_samples = len(data_loader.sampler)
-    log = {'loss': total_loss / n_samples,
+    log = {#'loss': total_loss / n_samples,
            'time/sample': time_cost/n_samples,
            'ce_code': ce_code}
     log.update({

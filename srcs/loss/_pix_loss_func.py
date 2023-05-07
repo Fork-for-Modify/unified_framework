@@ -5,7 +5,7 @@ from torchvision.models import vgg16_bn
 import torch
 import torch.nn.functional as F
 # from srcs.loss.PerceptualLoss import PerceptualLoss
-from pytorch_msssim import ssim, ms_ssim, SSIM, MS_SSIM  # pip install pytorch-msssim
+from pytorch_msssim import ssim, ms_ssim  # pip install pytorch-msssim
 
 # ===========================
 # global loss info extract

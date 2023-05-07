@@ -47,6 +47,7 @@ class Trainer(BaseTrainer):
         self.n_levels = 3  # model scale levels
         # self.scale = 0.5   # model scale
         self.grad_clip = 0.5  # optimizer gradient clip value
+        self.losses = self.config['loss']
         self.light_throughput = self.config.get('light_throughput', None)
         self.opt_cecode = self.config['arch'].get('opt_cecode', False)
         # zzh: for ce optim
@@ -74,7 +75,15 @@ class Trainer(BaseTrainer):
         target_light_throughput = torch.tensor(
             light_throughput).to(now_light_throught.device)
         return 100*F.mse_loss(now_light_throught, target_light_throughput)
-
+    
+    def _ce_reblur(self, output):
+        # frame_n should equal to ce_code_n cases
+        ce_weight = self.model.BlurNet.ce_weight.detach().squeeze()
+        ce_code = ((torch.sign(ce_weight)+1)/2).int()
+        ce_code_ = torch.tensor(ce_code).view(1, -1, 1, 1, 1)
+        ce_output = torch.sum(torch.mul(output, ce_code_), dim=1)
+        return ce_output
+    
     def _after_iter(self, epoch, batch_idx, phase, loss, metrics, image_tensors: dict):
         # hook after iter
         self.writer.set_step(
@@ -100,7 +109,8 @@ class Trainer(BaseTrainer):
         self.model.train()
         self.train_metrics.reset()
         interp_scale = self.model.frame_n//self.model.ce_code_n
-        # control ce code optimization epoch
+
+        # control ce code and optimization status
         if self.opt_cecode and (self.ce_opt_epoch is not None):
             if self.ce_opt_epoch[0] <= epoch <= self.ce_opt_epoch[1]:
                 self.model.BlurNet.ce_weight.requires_grad = True
@@ -108,6 +118,7 @@ class Trainer(BaseTrainer):
                 self.model.BlurNet.ce_weight.requires_grad = False
             self.logger.info(
                 f'Current CE Opt: {self.model.BlurNet.ce_weight.requires_grad}')
+
 
         for batch_idx, vid in enumerate(self.data_loader):  # video_dataloader
             
@@ -118,12 +129,16 @@ class Trainer(BaseTrainer):
             output_ = torch.flatten(output, end_dim=1)
             target_ = torch.flatten(target, end_dim=1)
 
-            # loss calc
-            loss = 0
             # main loss
-            loss = loss + self.criterion(output_, target_)
-            # for level in range(self.n_levels):
-            #     loss = loss + self.criterion(output_, target_)
+            loss = self.losses['main_loss'] * \
+                self.criterion['main_loss'](output_, target_)
+            
+            # reblur loss: frame_n should equal to ce_code_n cases
+            if 'reblur_loss' in self.losses:
+                # coded_output = self.model.BlurNet(output)
+                ce_output = self._ce_reblur(output)
+                loss = loss + self.losses['reblur_loss'] * \
+                    self.criterion['reblur_loss'](ce_output, data)
 
             # light throughput loss
             if self.opt_cecode and self.light_throughput:
@@ -232,8 +247,14 @@ class Trainer(BaseTrainer):
                 output_ = torch.flatten(output, end_dim=1)
                 target_ = torch.flatten(target, end_dim=1)
 
-                # loss
-                loss = self.criterion(output_, target_)
+                # main loss
+                loss = self.losses['main_loss'] * \
+                    self.criterion['main_loss'](output_, target_)
+                # reblur loss: frame_n should equal to ce_code_n cases
+                if 'reblur_loss' in self.losses:
+                    # coded_output = self.model.BlurNet(output)
+                    ce_output = self._ce_reblur(output)
+                    loss = loss + self.losses['reblur_loss'] *self.criterion['reblur_loss'](ce_output, data)
 
                 # iter metrics
                 iter_metrics = {}
@@ -330,7 +351,14 @@ def train_worker(config):
     #     'Number of parameters: ', params)+'='*40)
 
     # get function handles of loss and metrics
-    criterion = instantiate(config.loss)
+    # criterion = instantiate(config.loss)
+    # get function handles of loss and metrics
+    criterion = {}
+    if 'main_loss' in config.loss:
+        criterion['main_loss'] = instantiate(config.main_loss)
+    if 'reblur_loss' in config.loss:
+        criterion['reblur_loss'] = instantiate(
+            config.reblur_loss)
     metrics = [instantiate(met, is_func=True) for met in config['metrics']]
 
     # build optimizer, learning rate scheduler.

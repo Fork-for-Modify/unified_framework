@@ -19,7 +19,7 @@ arch:
 loss: {'main_loss':1, 'reblur_loss':0.2} # main_loss, input_denoise_loss, forward_conv_loss
 main_loss:
   _target_: srcs.loss._pix_loss_cls.WeightedLoss
-  loss_conf_dict: {'CharbonnierLoss':0.6, 'SSIMLoss':0.3, 'EdgeLoss':0.1}
+  loss_conf_dict: {'CharbonnierLoss':1.0, 'SSIMLoss':0.05, 'EdgeLoss':0.05}
 reblur_loss:
   _target_: srcs.loss._pix_loss_cls.CharbonnierLoss
 

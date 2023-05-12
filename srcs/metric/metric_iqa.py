@@ -69,8 +69,6 @@ def calc_mse(output, target):
     '''
     calculate mse
     '''
-    output = output.cpu().detach().numpy()
-    target = target.cpu().detach().numpy()
     assert output.shape[0] == target.shape[0]
     total_psnr = np.zeros(output.shape[0])
     for k, (pred, gt) in enumerate(zip(output, target)):

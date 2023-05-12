@@ -13,7 +13,7 @@ arch:
   # ce_code_init: [1,0,1,0,1,0,1,1,1,1,1,1,0,0,0,1] # len16-02
   opt_cecode: false
   ce_net: CEBlurNet
-  binary_fc: STEBinary_fc
+  binary_fc: ExpBinary_fc # ExpBinary_fc | STEBinary_fc
   bd_net: BDNeRV_RC # BDNeRV | BDNeRV_RC | BDNeRV_RC2 | BDNeRV_BRC
 
 loss: {'main_loss':1, 'reblur_loss':0.2} # main_loss, input_denoise_loss, forward_conv_loss

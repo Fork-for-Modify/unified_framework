@@ -17,13 +17,13 @@ hydra:
 exp_name: code_dev/BDNeRV_RC  # experiment name
 tester_name: cebd_tester # tester name: cebd_realtester | cebd_tester
 status: test       # run status: train|test|real_test
-checkpoint: ${hydra:runtime.cwd}/outputs/code_dev/BDNeRV_RC/train/_M_ce8_len8-03_noise0-0.01_e500_GoPro_loss-Charbon-Edge_adan_2023-05-03_15-17-59/checkpoints/model_latest.pth  # loading checkpoint ${hydra:runtime.cwd}
+checkpoint: ${hydra:runtime.cwd}/outputs/code_dev/BDNeRV_RC/record/bak_ssim-loss/2023-05-09_16-21-47/checkpoints/model_latest.pth  # loading checkpoint ${hydra:runtime.cwd}
 outputs_dir: outputs/
 
 ##### run
-gpus: [3]           # GPU used, Warning: Only one GPU is supported for 'test' now
+gpus: [1]           # GPU used, Warning: Only one GPU is supported for 'test' now
 num_workers: 2      # number of cpu worker
-save_img: true      # save the reconstructed images
+save_img: false      # save the reconstructed images
 
 # params
 sigma_range: 0
@@ -34,8 +34,12 @@ trainer:
 
 ##### metrics
 metrics:
-  - _target_: srcs.metric.metric.calc_psnr
-  - _target_: srcs.metric.metric.calc_ssim
+  - _target_: srcs.metric.metric_iqa.IQA_Metric
+    metric_name: psnr
+  - _target_: srcs.metric.metric_iqa.IQA_Metric
+    metric_name: ssim
+  - _target_: srcs.metric.metric_iqa.IQA_Metric
+    metric_name: lpips
 
 ##### data&nets
 defaults:

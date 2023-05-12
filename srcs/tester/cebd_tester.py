@@ -53,7 +53,8 @@ def test_worker(gpus, config):
     # instantiate loss and metrics
     # criterion = instantiate(loaded_config.loss, is_func=False)
     criterion=None # don't calc loss in test
-    metrics = [instantiate(met, is_func=True) for met in loaded_config.metrics]
+    # metrics = [instantiate(met, is_func=True) for met in loaded_config.metrics]
+    metrics = [instantiate(met) for met in config.metrics]
 
     # setup data_loader instances
     data_loader = instantiate(config.test_data_loader)
@@ -88,7 +89,7 @@ def test(data_loader, model,  device, criterion, metrics, config):
 
     model.eval()
     total_loss = 0.0
-    total_metrics = torch.zeros(len(metrics))
+    total_metrics = torch.zeros(len(metrics), device=device)
     time_start = time.time()
     with torch.no_grad():
         for i, vid in enumerate(tqdm(data_loader, desc='Testing')):

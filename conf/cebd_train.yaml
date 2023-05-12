@@ -36,14 +36,16 @@ trainer:
 # params
 sigma_range: [0,0.01] # train noise
 test_sigma_range: 0 # test noise
-ce_opt_epoch: # [200, 400]
+ce_opt_epoch: # [100, 300]
 frame_n: 8 # 8,64
 # light_throughput: 0.5
 
 ##### metrics
 metrics:
-  - _target_: srcs.metric.metric.calc_psnr
-  - _target_: srcs.metric.metric.calc_ssim
+  - _target_: srcs.metric.metric_iqa.IQA_Metric
+    metric_name: psnr
+  - _target_: srcs.metric.metric_iqa.IQA_Metric
+    metric_name: ssim
 
 ##### data&nets
 defaults:

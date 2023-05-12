@@ -7,8 +7,8 @@ hydra:
       subdir: ${hydra.job.override_dirname}
 
 ##### dir
-exp_name: code_dev/BDNeRV_RC  # experiment name
-trainer_name: cebd_trainer # trainer name
+exp_name: code_dev/unified  # MARK: experiment name: unified
+trainer_name: unified_trainer # MARK: trainer name: my_trainer | unified_trainer
 status: train       # run status: train|test|debug
 resume_conf:  # resume configuration, default=[epoch, optimizer]
 resume: # resuming checkpoint path (${hydra:runtime.cwd}/ )
@@ -26,7 +26,7 @@ trainer:
   limit_valid_iters:  50    # maximal validation batches: empty for all
   monitor: min loss/valid # monitor for early stop: max calc_psnr/valid | min loss/valid
   saving_top_k: 5         # save top k checkpoints (best checkpoints saved separately)
-  landmark_list: [100,200,300,400] # save landmark checkpoints assigned by this list
+  landmark_list:  # save landmark checkpoints assigned by this list
   early_stop: # 80          # stop if no improvement in consecutive $early_stop epochs, 10
   logging_step: 1000       # one log / $logging_step iteration
   tensorboard: true       # use tensorboard for training log
@@ -35,7 +35,7 @@ trainer:
 
 # params
 sigma_range: [0,0.01] # train noise
-test_sigma_range: 0 # test noise
+# test_sigma_range: 0 # test noise
 ce_opt_epoch: # [100, 300]
 frame_n: 8 # 8,64
 # light_throughput: 0.5
@@ -50,7 +50,7 @@ metrics:
 ##### data&nets
 defaults:
   - data: vid_train_data
-  - network: cebd # phpnet
+  - network: unified # MARK: unified
   - hparams: ced_hyparams
 
   - override hydra/job_logging : custom # custom || colorlog

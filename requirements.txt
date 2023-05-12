@@ -16,4 +16,5 @@ pip:
     kornia
     einops
     pytorch-gradual-warmup-lr
-    import pyiqa
+    pyiqa
+    requests

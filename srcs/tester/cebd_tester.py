@@ -3,14 +3,13 @@ import os
 import cv2
 import torch
 import time
-from omegaconf import OmegaConf, open_dict
+from omegaconf import OmegaConf
 from tqdm import tqdm
 from srcs.utils.util import instantiate
 from srcs.utils.utils_image_kair import tensor2uint, imsave
-from srcs.utils.utils_patch_proc import window_partitionx, window_reversex
+# from srcs.utils.utils_patch_proc import window_partitionx, window_reversex
 import torch.nn.functional as F
-from srcs.utils.utils_eval_zzh import gpu_inference_time_est
-
+from srcs.utils.utils_eval_zzh import gpu_inference_time, model_complexity
 
 def testing(gpus, config):
     test_worker(gpus, config)
@@ -48,7 +47,7 @@ def test_worker(gpus, config):
 
 
     # reset param
-    model.BlurNet.test_sigma_range = config.test_sigma_range
+    # model.BlurNet.test_sigma_range = config.test_sigma_range
 
     # instantiate loss and metrics
     # criterion = instantiate(loaded_config.loss, is_func=False)
@@ -63,11 +62,11 @@ def test_worker(gpus, config):
     # test
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     log = test(data_loader, model,
-               device, criterion, metrics, config)
+               device, criterion, metrics, config, logger)
     logger.info(log)
 
 
-def test(data_loader, model,  device, criterion, metrics, config):
+def test(data_loader, model,  device, criterion, metrics, config, logger=None):
     '''
     test step
     '''
@@ -82,8 +81,12 @@ def test(data_loader, model,  device, criterion, metrics, config):
 
     # inference time test
     # input_shape = (1, 32, 3, 256, 256)  # test image size
-    # gpu_inference_time_est(model, input_shape)
+    # gpu_inference_time(model, input_shape)
+    
+    # calc MACs & Param. Num
+    model_complexity(model=model, input_shape=(8, 3, 256, 256), logger=logger)
 
+    # run
     ce_weight = model.BlurNet.ce_weight.detach().squeeze()
     ce_code = ((torch.sign(ce_weight)+1)/2).int()
 

@@ -26,7 +26,7 @@ trainer:
   limit_valid_iters:  50    # maximal validation batches: empty for all
   monitor: min loss/valid # monitor for early stop: max calc_psnr/valid | min loss/valid
   saving_top_k: 5         # save top k checkpoints (best checkpoints saved separately)
-  landmark_list:  # save landmark checkpoints assigned by this list
+  landmark_list: [100,200,300,400] # save landmark checkpoints assigned by this list
   early_stop: # 80          # stop if no improvement in consecutive $early_stop epochs, 10
   logging_step: 1000       # one log / $logging_step iteration
   tensorboard: true       # use tensorboard for training log

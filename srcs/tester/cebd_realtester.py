@@ -9,7 +9,7 @@ from srcs.utils.util import instantiate
 from srcs.utils.utils_image_kair import tensor2uint, imsave
 from srcs.utils.utils_patch_proc import window_partitionx, window_reversex
 import torch.nn.functional as F
-from srcs.utils.utils_eval_zzh import gpu_inference_time_est
+from srcs.utils.utils_eval_zzh import gpu_inference_time
 
 # zzh: not implemented
 def testing(gpus, config):
@@ -80,7 +80,7 @@ def test(data_loader, model,  device, metrics, config):
 
     # inference time test
     # input_shape = (1, 32, 3, 256, 256)  # test image size
-    # gpu_inference_time_est(model, input_shape)
+    # gpu_inference_time(model, input_shape)
 
     # ce_weight = model.BlurNet.ce_weight.detach().squeeze()
     # ce_code = ((torch.sign(ce_weight)+1)/2).int()

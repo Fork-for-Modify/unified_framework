@@ -8,8 +8,7 @@ from srcs.utils.util import collect, instantiate, get_logger
 from srcs.logger import BatchMetrics
 import torch.nn.functional as F
 from functools import reduce
-# import kornia
-# from ptflops import get_model_complexity_info
+from srcs.utils.utils_eval_zzh import gpu_inference_time, model_complexity
 from srcs.model._basic_binary_modules import STEBinary_fc
 
 #======================================
@@ -341,14 +340,8 @@ def train_worker(config):
     logger.info(
         f'Trainable parameters: {sum([p.numel() for p in trainable_params])}')
 
-    # calc model complicity
-    # from ptflops import get_model_complexity_info
-    # macs, params = get_model_complexity_info(
-    #     model=model, input_res=(config.frame_n, 3, config.data_loader.patch_size, config.data_loader.patch_size), verbose=False, print_per_layer_stat=False)
-    # logger.info(
-    #     '='*40+'\n{:<30} {:<8}'.format('Computational complexity: ', macs))
-    # logger.info('{:<30}  {:<8}\n'.format(
-    #     'Number of parameters: ', params)+'='*40)
+    # calc MACs & Param. Num
+    model_complexity(model=model, input_shape=(8, 3, 256, 256), logger=logger)
 
     # get function handles of loss and metrics
     # criterion = instantiate(config.loss)

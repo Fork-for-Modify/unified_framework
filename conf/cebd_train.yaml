@@ -11,7 +11,7 @@ exp_name: code_dev/BDNeRV_RC  # experiment name
 trainer_name: cebd_trainer # trainer name
 status: train       # run status: train|test|debug
 resume_conf:  # resume configuration, default=[epoch, optimizer]
-resume: # resuming checkpoint path (${hydra:runtime.cwd}/ )
+resume: ${hydra:runtime.cwd}/outputs/code_dev/BDNeRV_RC/train/2023-05-14_11-41-35/checkpoints/model_latest.pth # resuming checkpoint path (${hydra:runtime.cwd}/ )
 checkpoint_dir: checkpoints/   # models saving dir (relative to $dir)
 final_test_dir: final_test/    # final test result saving dir (relative to $dir)
 log_dir: events/   # log file save dir (relative to $dir)

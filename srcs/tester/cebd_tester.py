@@ -26,8 +26,11 @@ def test_worker(gpus, config):
 
     # prepare model & checkpoint for testing
     # load checkpoint
-    logger.info('Loading checkpoint: {} ...'.format(config.checkpoint))
+    logger.info(f"💡Loading checkpoint: {config.checkpoint} ...")
     checkpoint = torch.load(config.checkpoint)
+    logger.info(f"💡Checkpoint loaded: epoch {checkpoint['epoch']}.")
+
+    # select config file
     if 'config' in checkpoint:
         loaded_config = OmegaConf.create(checkpoint['config'])
     else:
@@ -39,12 +42,11 @@ def test_worker(gpus, config):
     if len(gpus) > 1:
         model = torch.nn.DataParallel(model, device_ids=gpus)
 
-    # load weight
+    # load weight 
     state_dict = checkpoint['state_dict']
     model.load_state_dict(state_dict)
     # load_checkpoint(model, config.checkpoint) # for deeprft
     # load_checkpoint_compress_doconv(model, config.checkpoint)  # for deeprft
-
 
     # reset param
     # model.BlurNet.test_sigma_range = config.test_sigma_range

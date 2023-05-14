@@ -29,17 +29,16 @@ def param_counting(model, logger=None):
 
     if logger:
         logger.info(
-            '='*40+f'\nParam. Num: total {total_num:.2f} M, trainable {trainable_num:.2f} M\n'+'='*40)
+            '='*40+f'\nParam. Num: total {total_num:.4f} M, trainable {trainable_num:.4f} M\n'+'='*40)
     else:
-        print((
-            '='*40+f'\nTrainable parameters: {trainable_num:.2f} M\n'+'='*40))
+        print('='*40+f'\nParam. Num: total {total_num:.4f} M, trainable {trainable_num:.4f} M\n'+'='*40)
 
 # --------------------------------------------
 # print MACs & Param. Num
 # --------------------------------------------
 
 
-def model_complexity(model, input_shape, input_constructor=None, print_per_layer_stat=False, logger=None, **kwargs):
+def model_complexity(model, input_shape, input_constructor=None, logger=None, print_per_layer_stat=False, **kwargs):
     """
     calcalate the MACs and parameters of the model based on ptflops package
 
@@ -139,8 +138,4 @@ def gpu_inference_time(model, input_shape, logger=None, device=None, repetitions
 
 
 if __name__ == '__main__':
-
-    model = DeepRFT()
-    device = torch.device("cuda:0")
-    input_shape = (1, 3, 224, 224)
-    inference_time_est(model, device, input_shape)
+    pass

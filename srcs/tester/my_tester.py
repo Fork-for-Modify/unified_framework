@@ -25,8 +25,9 @@ def test_worker(gpus, config):
 
     # prepare model & checkpoint for testing
     # load checkpoint
-    logger.info('Loading checkpoint: {} ...'.format(config.checkpoint))
+    logger.info(f"💡 Loading checkpoint: {config.checkpoint} ...")
     checkpoint = torch.load(config.checkpoint)
+    logger.info(f"💡 Checkpoint loaded: epoch {checkpoint['epoch']}.")
     if 'config' in checkpoint:
         loaded_config = OmegaConf.create(checkpoint['config'])
     else:

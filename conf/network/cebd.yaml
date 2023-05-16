@@ -6,17 +6,16 @@ arch:
   test_sigma_range: ${test_sigma_range}
   ce_code_n: 8
   frame_n: ${frame_n}
-  # ce_code_init: [1,1,1,1,1,1,1,1] # all one
+  # ce_code_init: [1,0,0,1,1,0,1,0,1,1,1,1] # len12-04
   ce_code_init: [1,1,1,0,0,1,0,1] # len8-03
-  # ce_code_init: [1,1,0,0,1,1,0,1] # raskar8-03
-  # ce_code_init: [1,1,1,1,1,1,1,0,1,0,0,1] # raskar12-03
+  # ce_code_init: [1,1,1,1,1,1,1,1] # len8-allone 
   # ce_code_init: [1,1,0,1] # raskar4-01
   opt_cecode: false
   ce_net: CEBlurNet
   binary_fc: STEBinary_fc # ExpBinary_fc | STEBinary_fc
   bd_net: BDNeRV_RC # BDNeRV | BDNeRV_RC | BDNeRV_RC2 | BDNeRV_BRC
 
-loss: {'main_loss':1, 'reblur_loss':0.2} # main_loss, input_denoise_loss, forward_conv_loss
+loss: {'main_loss':1, 'reblur_loss':0.2} # main_loss, reblur_loss
 main_loss:
   _target_: srcs.loss._pix_loss_cls.WeightedLoss
   loss_conf_dict: {'CharbonnierLoss':1.0, 'SSIMLoss':0.05, 'EdgeLoss':0.05}

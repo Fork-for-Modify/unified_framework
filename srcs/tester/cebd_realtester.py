@@ -91,7 +91,7 @@ def test(data_loader, model,  device, metrics, config):
     total_metrics = torch.zeros(len(metrics))
     time_start = time.time()
     with torch.no_grad():
-        for i, data in enumerate(tqdm(data_loader, desc='Testing')):
+        for i, data in enumerate(tqdm(data_loader, desc='⏳ Testing')):
             data = torch.flip(data.to(device), [2, 3])
             _data = data/scale_fc
 

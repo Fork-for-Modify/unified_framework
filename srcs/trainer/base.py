@@ -99,6 +99,7 @@ class BaseTrainer(metaclass=ABCMeta):
         """
         Full training logic
         """
+        self.logger.info(f"\n⏩⏩ Start Training! | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ⏩⏩\n")
         not_improved_count = 0
         train_start = time.time()
         for epoch in range(self.start_epoch, self.epochs + 1):
@@ -128,11 +129,11 @@ class BaseTrainer(metaclass=ABCMeta):
                                      "Training stops.".format(self.early_stop))
                     if self.final_test:
                         self.logger.info(
-                            '🎉🎉 Finish Training! 🎉🎉 \n\n ===> Start Testing(Using Latest Checkpoint): \n')
+                            f"\n🎉🎉 Finish Training! | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} 🎉🎉\n\n == = > Start Testing(Using Latest Checkpoint): \n")
                         self._test_epoch()
                     else:
                         self.logger.info(
-                            '🎉🎉 Finish Training! 🎉🎉\n\n')
+                            f"\n🎉🎉 Finish Training! | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}🎉🎉\n\n")
                     exit(1)
 
                 using_topk_save = self.saving_top_k > 0
@@ -153,11 +154,11 @@ class BaseTrainer(metaclass=ABCMeta):
                 dist.barrier()
         if self.final_test:
             self.logger.info(
-                '🎉🎉 Finish Training! 🎉🎉 \n\n ===> Start Testing(Using Latest Checkpoint): \n')
+                f"\n🎉🎉 Finish Training! | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} 🎉🎉\n\n == = > Start Testing(Using Latest Checkpoint): \n")
             self._test_epoch()
         else:
             self.logger.info(
-                '🎉🎉 Finish Training! 🎉🎉\n\n')
+                f"\n🎉🎉 Finish Training! | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}🎉🎉\n\n")
 
     def _save_checkpoint(self, epoch, save_best=False, save_latest=True, landmark_list=[]):
         """
@@ -226,9 +227,9 @@ class BaseTrainer(metaclass=ABCMeta):
         if 'epoch' in resume_conf:
             self.start_epoch = checkpoint['epoch'] + 1
             self.logger.info(
-                f"▶️ Start training model from resumed epoch ({checkpoint['epoch']}).")
+                f"📣 Epoch index resumed to epoch ({checkpoint['epoch']}).")
         else:
             self.start_epoch = 1
             self.logger.info(
-                f"▶️ Start training model from restarted epoch (1).")
+                f"📣 Epoch index renumbered from epoch (1).")
 

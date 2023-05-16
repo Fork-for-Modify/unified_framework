@@ -10,7 +10,7 @@ from importlib import import_module
 
 # my_test | cebd_test
 
-@hydra.main(config_path='conf', config_name='my_test')
+@hydra.main(config_path='conf', config_name='cebd_test')
 def main(config):
     # GPU setting
     if not config.gpus or config.gpus == -1:

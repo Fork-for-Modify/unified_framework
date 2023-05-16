@@ -97,7 +97,7 @@ def test(data_loader, model,  device, criterion, metrics, config, logger=None):
     total_metrics = torch.zeros(len(metrics), device=device)
     time_start = time.time()
     with torch.no_grad():
-        for i, vid in enumerate(tqdm(data_loader, desc='Testing')):
+        for i, vid in enumerate(tqdm(data_loader, desc='⏳ Testing')):
             # move vid to gpu, convert to 0-1 float
             vid = vid.to(device).float()/255 
             N, F, C, Hx, Wx = vid.shape

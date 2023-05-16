@@ -29,9 +29,9 @@ def param_counting(model, logger=None):
 
     if logger:
         logger.info(
-            '='*40+f'\nParam. Num: total {total_num:.4f} M, trainable {trainable_num:.4f} M\n'+'='*40)
+            '='*40+f'\nParam. Num: total {total_num/1e6:.4f} M, trainable {trainable_num/1e6:.4f} M\n'+'='*40)
     else:
-        print('='*40+f'\nParam. Num: total {total_num:.4f} M, trainable {trainable_num:.4f} M\n'+'='*40)
+        print('='*40+f'\nParam. Num: total {total_num/1e6:.4f} M, trainable {trainable_num/1e6:.4f} M\n'+'='*40)
 
 # --------------------------------------------
 # print MACs & Param. Num

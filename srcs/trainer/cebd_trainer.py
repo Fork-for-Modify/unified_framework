@@ -336,9 +336,6 @@ def train_worker(config):
     # build model. print it's structure and # trainable params.
     model = instantiate(config.arch)
     logger.info(model)
-    trainable_params = filter(lambda p: p.requires_grad, model.parameters())
-    logger.info(
-        f'Trainable parameters: {sum([p.numel() for p in trainable_params])}')
 
     # calc MACs & Param. Num
     model_complexity(model=model, input_shape=(8, 3, 256, 256), logger=logger)

@@ -1,6 +1,6 @@
 import logging
 import os
-import cv2
+import torch.nn.functional as F
 import torch
 import time
 from omegaconf import OmegaConf
@@ -97,10 +97,10 @@ def test(data_loader, model,  device, criterion, metrics, config, logger):
     total_metrics = torch.zeros(len(metrics), device=device)
     time_start = time.time()
     with torch.no_grad():
-        for i, vid in enumerate(tqdm(data_loader, desc='Testing')):
+        for i, vid in enumerate(tqdm(data_loader, desc='⏳ Testing')):
             # move vid to gpu, convert to 0-1 float
             vid = vid.to(device).float()/255 
-            N, F, C, Hx, Wx = vid.shape
+            N, M, C, Hx, Wx = vid.shape
 
             # direct
             output, data, data_noisy = model(vid)
@@ -124,9 +124,9 @@ def test(data_loader, model,  device, criterion, metrics, config, logger):
             # HX, WX = int((Hx+sf-1)/sf)*sf, int((Wx+sf-1)/sf) * \
             #     sf  # pad to a multiple of scale_factor (sf)
             # pad_h, pad_w = HX-Hx, WX-Wx
-            # vid_pad = F.pad(vid, [0, 0, pad_w, 0, pad_h])
+            # vid_pad = F.pad(vid, [0, pad_w, 0, pad_h])
             # output, data, data_noisy = model(vid_pad)
-            # output = output[:, :, :Hx, :Wx]
+            # output = output[:, :, :, :Hx, :Wx]
 
             # clamp to 0-1
             output = torch.clamp(output, 0, 1)

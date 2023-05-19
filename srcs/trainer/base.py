@@ -62,11 +62,11 @@ class BaseTrainer(metaclass=ABCMeta):
         if self.final_test:
             self.final_test_dir = Path(self.config.final_test_dir)
         if is_master():
-            self.checkpt_dir.mkdir()
+            self.checkpt_dir.mkdir(exist_ok=True)
             # setup visualization writer instance
-            log_dir.mkdir()
+            log_dir.mkdir(exist_ok=True)
             if self.final_test:
-                self.final_test_dir.mkdir()
+                self.final_test_dir.mkdir(exist_ok=True)
             self.writer = TensorboardWriter(
                 log_dir, cfg_trainer['tensorboard'])
         else:

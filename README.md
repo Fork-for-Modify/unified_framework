@@ -8,15 +8,22 @@
 </div>
 
 ## Description
+
 Code for paper paper.
 
+## Requirements
+
+Please refer to [](./requirements.txt).
+
 ## How to run
+
 ```bash
 python main.py
 ```
 
 
 ### Citation
+
 ```
 @article{YourName,
   title={Your Title},
@@ -26,5 +33,6 @@ python main.py
 }
 ```
 
-### Ackonwledgement
-- dataset interpolation: [revisiting-sepconv](https://github.com/Fork-for-Modify/revisiting-sepconv)
+### Reference
+
+- [ENeRV](https://github.com/kyleleey/E-NeRV)

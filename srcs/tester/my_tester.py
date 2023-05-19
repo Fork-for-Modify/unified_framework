@@ -20,8 +20,7 @@ def test_worker(gpus, config):
 
     # logger & dir setting
     logger = logging.getLogger('test')
-    if not os.path.exists(config.outputs_dir):
-        os.makedirs(config.outputs_dir)
+    os.makedirs(config.outputs_dir,exist_ok=True)
 
     # prepare model & checkpoint for testing
     # load checkpoint

@@ -26,4 +26,4 @@ shuffle: true
 num_workers: ${num_workers}
 pin_memory: true
 prefetch_factor: 1
-all2CPU: true #
+all2CPU: false #

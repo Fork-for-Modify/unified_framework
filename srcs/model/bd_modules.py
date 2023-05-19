@@ -233,63 +233,6 @@ class NeRVBlock(nn.Module):
         return self.act(self.norm(self.conv(x)))
 
 
-# class NeRV(nn.Module):
-#     def __init__(self, **kargs):
-#         super(NeRV, self).__init__()
-#         self.layers, self.head_layers, self.t_layers, self.norm_layers = [
-#             nn.ModuleList() for _ in range(4)]
-#         ngf = self.fc_dim
-#         for i, stride in enumerate(kargs['stride_list']):
-#             if i == 0:
-#                 # expand channel width at first stage
-#                 new_ngf = int(ngf * kargs['expansion'])
-#             else:
-#                 # change the channel width for each stage
-#                 new_ngf = max(
-#                     ngf // (1 if stride == 1 else kargs['reduction']), kargs['lower_width'])
-
-#             self.t_layers.append(
-#                 MLP(dim_list=[128, 2*ngf], act=kargs['act']))
-#             self.norm_layers.append(nn.InstanceNorm2d(ngf, affine=False))
-
-#             if i == 0:
-#                 self.layers.append(Conv_Up_Block(ngf=ngf, new_ngf=new_ngf, stride=stride,
-#                                    bias=kargs['bias'], norm=kargs['norm'], act=kargs['act'], conv_type=kargs['conv_type']))
-#             else:
-#                 self.layers.append(NeRVBlock(ngf=ngf, new_ngf=new_ngf, stride=stride,
-#                                    bias=kargs['bias'], norm=kargs['norm'], act=kargs['act'], conv_type=kargs['conv_type']))
-#             ngf = new_ngf
-
-#             # build head classifier, upscale feature layer, upscale img layer
-#             if kargs['sin_res']:
-#                 if i == len(kargs['stride_list']) - 1:
-#                     head_layer = nn.Conv2d(ngf, 3, 1, 1, bias=kargs['bias'])
-#                 else:
-#                     head_layer = None
-#             else:
-#                 head_layer = nn.Conv2d(ngf, 3, 1, 1, bias=kargs['bias'])
-#             self.head_layers.append(head_layer)
-#         self.sigmoid = kargs['sigmoid']
-
-#     def forward(self, x):
-#         out_list = []
-#         for layer, head_layer, t_layer, norm_layer in zip(self.layers, self.head_layers, self.t_layers, self.norm_layers):
-#             # t_manipulate
-#             output = norm_layer(output)
-#             t_feat = t_layer(t_manipulate)
-#             output = self.fuse_t(output, t_feat)
-#             # conv
-#             output = layer(output)
-#             if head_layer is not None:
-#                 img_out = head_layer(output)
-#                 # normalize the final output iwth sigmoid or tanh function
-#                 img_out = torch.sigmoid(img_out) if self.sigmoid else (
-#                     torch.tanh(img_out) + 1) * 0.5
-#                 out_list.append(img_out)
-
-#         return out_list
-
-
 # condition vector & ce image feature fusion
 class CFusion(nn.Module):
     def __init__(self, n_feats, act=True):
@@ -310,7 +253,7 @@ class CFusion(nn.Module):
         
 # -------------------- Conditional Unet ------------------------------
 class CUnet(nn.Module):
-    def __init__(self, n_feats, n_resblock=3, kernel_size=3, padding=1, act=True):
+    def __init__(self, n_feats, n_resblock=4, kernel_size=3, padding=1, act=True):
         super(CUnet, self).__init__()
 
         # encoder1
@@ -319,8 +262,7 @@ class CUnet(nn.Module):
 
         # encoder2
         Encoder_second = [Conv(n_feats*2, n_feats*4, kernel_size, padding=padding, stride=2, act=act)]
-        Encoder_second.extend([ResBlock(
-            Conv, n_feats*4, kernel_size, padding=padding) for _ in range(n_resblock)])
+        Encoder_second.extend([ResBlock(Conv, n_feats*4, kernel_size, padding=padding) for _ in range(n_resblock)])
         
         # decoder2
         Decoder_second = [

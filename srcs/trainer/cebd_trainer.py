@@ -338,7 +338,7 @@ def train_worker(config):
     logger.info(model)
 
     # calc MACs & Param. Num
-    model_complexity(model=model, input_shape=(8, 3, 256, 256), logger=logger)
+    # model_complexity(model=model, input_shape=(8, 3, 256, 256), logger=logger)
 
     # get function handles of loss and metrics
     # criterion = instantiate(config.loss)

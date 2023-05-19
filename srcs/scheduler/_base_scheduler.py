@@ -1,6 +1,18 @@
 from importlib import import_module
 # import torch.optim as optim
-from warmup_scheduler import GradualWarmupScheduler
+
+
+# ---
+# GradualWarmupScheduler
+# install warmup_scheduler package
+#   pip install git+https://github.com/ildoonet/pytorch-gradual-warmup-lr.git
+# ---
+
+# If have trouble in importing warmup_scheduler, directly use scheduler/GradualWarmupScheduler.py. It's the same.
+try:
+    from warmup_scheduler import GradualWarmupScheduler
+except:
+    from .GradualWarmupScheduler import GradualWarmupScheduler
 
 
 def getGradualWarmupScheduler(optimizer, multiplier, warmup_epochs, after_scheduler_conf):

@@ -159,7 +159,7 @@ class BDNeRV_RC_noTEM(nn.Module):
         kernel_size = 3
         padding = 1
 
-        pos_b, pos_l = 1.25, n_feats*4*2  # position encoding params, without TEM
+        pos_b, pos_l = 1.25, n_feats*4  # position encoding params, without TEM
         # mlp_dim_list = [2*pos_l, 512, n_feats*4*2] # (160, 512, 256)
         # mlp_act = 'gelu'
 

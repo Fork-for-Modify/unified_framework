@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
-from srcs.model.bd_model import BDNeRV, BDNeRV_RC, BDNeRV_RC2, BDNeRV_BRC
+from srcs.model.bd_model import BDNeRV, BDNeRV_RC, BDNeRV_RC_noTEM
 from srcs.model.ce_model import CEBlurNet
 
 class CEBDNet(nn.Module):
@@ -24,15 +24,15 @@ class CEBDNet(nn.Module):
             self.DeBlurNet = BDNeRV()
         elif bd_net=='BDNeRV_RC':
             self.DeBlurNet = BDNeRV_RC()
-        elif bd_net == 'BDNeRV_RC2':
-            self.DeBlurNet = BDNeRV_RC2()
-        elif bd_net == 'BDNeRV_BRC':
-            self.DeBlurNet = BDNeRV_BRC()
+        # elif bd_net == 'BDNeRV_BRC':
+        #     self.DeBlurNet = BDNeRV_BRC()
+        elif bd_net == 'BDNeRV_RC_noTEM':
+            self.DeBlurNet = BDNeRV_RC_noTEM()
         else:
             raise NotImplementedError(f'No model named {bd_net}')
 
     def forward(self, frames):
-        ce_blur_img_noisy, time_idx, ce_code, ce_blur_img = self.BlurNet(
+        ce_blur_img_noisy, time_idx, ce_code_up, ce_blur_img = self.BlurNet(
             frames)
-        output = self.DeBlurNet(ce_blur_img_noisy, time_idx, ce_code)
+        output = self.DeBlurNet(ce_blur_img_noisy, time_idx, ce_code_up)
         return output, ce_blur_img, ce_blur_img_noisy

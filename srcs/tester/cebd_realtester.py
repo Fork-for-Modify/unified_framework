@@ -11,7 +11,6 @@ from srcs.utils.utils_patch_proc import window_partitionx, window_reversex
 import torch.nn.functional as F
 from srcs.utils.utils_eval_zzh import gpu_inference_time
 
-# zzh: not implemented
 def testing(gpus, config):
     test_worker(gpus, config)
 
@@ -29,35 +28,28 @@ def test_worker(gpus, config):
     logger.info(f"💡 Loading checkpoint: {config.checkpoint} ...")
     checkpoint = torch.load(config.checkpoint)
     logger.info(f"💡 Checkpoint loaded: epoch {checkpoint['epoch']}.")
+
+    # select config file
     if 'config' in checkpoint:
         loaded_config = OmegaConf.create(checkpoint['config'])
     else:
         loaded_config = config
 
-    # inference & test_sigma_setting
-    loaded_config.inference = True
-
     # instantiate model
     model = instantiate(loaded_config.arch)
-
     logger.info(model)
     if len(gpus) > 1:
         model = torch.nn.DataParallel(model, device_ids=gpus)
 
     # load weight
-    # state_dict = checkpoint['state_dict']
-    # model.load_state_dict(state_dict)
-    # load_checkpoint(model, config.checkpoint) # for deeprft
-    load_checkpoint_compress_doconv(model, config.checkpoint)  # for deeprft
-
-    # instantiate loss and metrics
-
-    metrics = [instantiate(met, is_func=True) for met in loaded_config.metrics]
+    state_dict = checkpoint['state_dict']
+    model.load_state_dict(state_dict)
 
     # setup data_loader instances
     data_loader = instantiate(config.test_data_loader)
 
     # test
+    metrics = None
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     log = test(data_loader, model,
                device, metrics, config)
@@ -69,37 +61,41 @@ def test(data_loader, model,  device, metrics, config):
     test step
     '''
 
-    # init
+    # init dir
+    res_dir_input = os.path.join(config.outputs_dir, 'input')
+    res_dir_output = os.path.join(config.outputs_dir, 'output')
+    os.makedirs(res_dir_input,exist_ok=True)
+    os.makedirs(res_dir_output,exist_ok=True)
+    
+    # init model
     model = model.to(device)
-    ce_weight = model.BlurNet.ce_weight.detach().squeeze()
-    ce_code = ((torch.sign(ce_weight)+1)/2).int()
-    scale_fc = len(ce_code)/sum(ce_code)
-
-    # extract deblur model
     model_deblur = model.DeBlurNet  # deblur model
 
-    # inference time test
-    # input_shape = (1, 32, 3, 256, 256)  # test image size
-    # gpu_inference_time(model, input_shape)
-
-    # ce_weight = model.BlurNet.ce_weight.detach().squeeze()
-    # ce_code = ((torch.sign(ce_weight)+1)/2).int()
+    # init param
+    ce_weight = model.BlurNet.ce_weight.detach()
+    ce_code = ((torch.sign(ce_weight)+1)/2).int()
+    time_idx = torch.tensor(range(len(ce_code)))/(len(ce_code)-1)
+    time_idx = time_idx.unsqueeze(1).to(device)
+    scale_fc = 2
 
     model_deblur.eval()
-    total_loss = 0.0
-    total_metrics = torch.zeros(len(metrics))
     time_start = time.time()
     with torch.no_grad():
         for i, data in enumerate(tqdm(data_loader, desc='⏳ Testing')):
-            data = torch.flip(data.to(device), [2, 3])
-            _data = data/scale_fc
+            # data = torch.flip(data.to(device), [2, 3])
+            data = data.to(device).float()/255/scale_fc
+            N, C, Hx, Wx = data.shape
+            
+            # direct
+            output = model_deblur(ce_blur=data, time_idx=time_idx, ce_code=ce_code)
 
-            _, _, Hx, Wx = data.shape
             # sliding window - patch processing
-            data_re, batch_list = window_partitionx(_data, config.win_size)
-            output = model_deblur(data_re)
-            output = window_reversex(
-                output, config.win_size, Hx, Wx, batch_list)
+            # _, _, Hx, Wx = data.shape
+            # sliding window - patch processing
+            # data_re, batch_list = window_partitionx(_data, config.win_size)
+            # output = model_deblur(data_re)
+            # output = window_reversex(
+            #     output, config.win_size, Hx, Wx, batch_list)
 
             # pad & crop
             # sf = 4
@@ -115,19 +111,16 @@ def test(data_loader, model,  device, metrics, config):
 
             # save some sample images
             for k, (in_img, out_img) in enumerate(zip(data, output)):
-                in_img = tensor2uint(in_img)
-                out_img = tensor2uint(out_img)
+                in_img = tensor2uint(in_img*scale_fc)
                 imsave(
-                    in_img, f'{config.outputs_dir}test{i+1:02d}_{k+1:04d}_in_img.jpg')
-                imsave(
-                    out_img, f'{config.outputs_dir}test{i+1:02d}_{k+1:04d}_out_img.jpg')
+                    in_img, f'{res_dir_input}/ce-blur#{i*N+k+1:04d}.jpg')
+                for j in range(len(ce_code)):
+                    out_img_j = tensor2uint(out_img[j])
+                    imsave(
+                        out_img_j, f'{res_dir_output}/frame#{i*N+k+1:04d}-{j:04d}.jpg')
 
     time_end = time.time()
     time_cost = time_end-time_start
     n_samples = len(data_loader.sampler)
-    log = {'loss': total_loss / n_samples,
-           'time/sample': time_cost/n_samples}
-    log.update({
-        met.__name__: total_metrics[i].item() / n_samples for i, met in enumerate(metrics)
-    })
+    log = {'time/sample': time_cost/n_samples}
     return log

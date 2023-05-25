@@ -12,20 +12,27 @@ _target_: srcs.data_loader._my_video_data_loaders.get_data_loaders
 # data_dir: /ssd/zzh/dataset/WAIC_TSR_GT/easy/  # WAIC_TSR dataset | bicycle/
 # data_dir: /ssd/zzh/dataset/WAIC_TSR_GT/hard/  # WAIC_TSR dataset
 ## BBNCZ
+# data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/demo/
 # data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/small_test/
 # data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/test/
-# data_dir: /ssd/0/zzh/dataset/WAIC_TSR_GT/easy/  # WAIC_TSR dataset | bicycle/
-# data_dir: /ssd/0/zzh/dataset/WAIC_TSR_GT/hard/  # WAIC_TSR dataset
+# data_dir: /ssd/0/zzh/dataset/WAIC_TSR_GT/easy/running_women/  # WAIC_TSR dataset | bicycle/
+# data_dir: /ssd/0/zzh/dataset/WAIC_TSR_GT/hard/cheetah  # WAIC_TSR dataset
 ## BBNCR
 # data_dir: /data/zzh/dataset/CV/GoPro/GOPRO_Large_all/mini_test/ # video for debug
 # data_dir: /data/zzh/dataset/CV/GoPro/GOPRO_Large_all/small_test/ # video for debug
 ## BBNCX
 # data_dir: /hdd/0/zzh/dataset/GoPro/GOPRO_Large_all/small_test/
-# data_dir: /hdd/0/zzh/dataset/GoPro/GOPRO_Large_all/test/
-# data_dir: /hdd/1/zzh/project/blur_decomposition/data/jelly/
+# data_dir: /hdd/0/zzh/dataset/WAIC_TSR_GT/easy/
+# data_dir: /hdd/0/zzh/dataset/WAIC_TSR_GT/hard/
+## BBNCY
+# data_dir: /ssd/2/zzh/dataset/GoPro/GOPRO_Large_all/test/  # video
+# data_dir: /ssd/2/zzh/dataset/WAIC_TSR_GT/easy/  # WAIC_TSR dataset | bicycle/
+# data_dir: /ssd/2/zzh/dataset/WAIC_TSR_GT/hard/  # WAIC_TSR dataset
+## RealTest
+# data_dir: ${hydra:runtime.cwd}/dataset/real_data/test/
 
 frame_num: ${frame_n}
-batch_size: 4
+batch_size: 1
 patch_size: ~
 tform_op:
 status: ${status}
@@ -33,4 +40,4 @@ shuffle: False
 num_workers: ${num_workers}
 pin_memory: True
 prefetch_factor: 2
-all2CPU: True
+all2CPU: False

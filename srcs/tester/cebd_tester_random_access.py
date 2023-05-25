@@ -25,23 +25,23 @@ def test_worker(gpus, config):
 
     # prepare model & checkpoint for testing
     # load checkpoint
-    logger.info(f"💡 Loading checkpoint: {config.checkpoint} ...")
+    logger.info(f"💡Loading checkpoint: {config.checkpoint} ...")
     checkpoint = torch.load(config.checkpoint)
-    logger.info(f"💡 Checkpoint loaded: epoch {checkpoint['epoch']}.")
+    logger.info(f"💡Checkpoint loaded: epoch {checkpoint['epoch']}.")
 
     # select config file
-    if 'config' in checkpoint:
-        loaded_config = OmegaConf.create(checkpoint['config'])
-    else:
-        loaded_config = config
+    # if 'config' in checkpoint:
+    #     loaded_config = OmegaConf.create(checkpoint['config'])
+    # else:
+    #     loaded_config = config
 
     # instantiate model
-    model = instantiate(loaded_config.arch)
+    model = instantiate(config.arch)
     logger.info(model)
     if len(gpus) > 1:
         model = torch.nn.DataParallel(model, device_ids=gpus)
 
-    # load weight
+    # load weight 
     state_dict = checkpoint['state_dict']
     model.load_state_dict(state_dict)
     # load_checkpoint(model, config.checkpoint) # for deeprft
@@ -72,6 +72,7 @@ def test(data_loader, model,  device, criterion, metrics, config, logger=None):
     test step
     '''
 
+
     # init
     model = model.to(device)
     interp_scale = getattr(model, 'frame_n', 8)//getattr(model, 'ce_code_n', 8)
@@ -85,11 +86,20 @@ def test(data_loader, model,  device, criterion, metrics, config, logger=None):
     # gpu_inference_time(model, input_shape)
     
     # calc MACs & Param. Num
-    model_complexity(model=model, input_shape=(8, 3, 256, 256), logger=logger)
+    # model_complexity(model=model, input_shape=(8, 3, 256, 256), logger=logger)
 
     # run
     ce_weight = model.BlurNet.ce_weight.detach().squeeze()
     ce_code = ((torch.sign(ce_weight)+1)/2).int()
+
+    # time ticks
+    time_ticks = config.get('time_ticks', None) # extract assigned frames
+    if time_ticks is None:
+        time_ticks = torch.tensor(range(len(ce_code)))
+    else:
+        time_ticks = torch.tensor(time_ticks)
+    logger.info("time_ticks: {}".format(time_ticks))
+    near_frame_ids = list(map(int, time_ticks)) 
 
     model.eval()
     total_loss = 0.0
@@ -102,7 +112,7 @@ def test(data_loader, model,  device, criterion, metrics, config, logger=None):
             N, F, C, Hx, Wx = vid.shape
 
             # direct
-            output, data, data_noisy = model(vid)
+            output, data, data_noisy = model(vid, time_ticks=time_ticks)
 
             # sliding window - patch processing
             # vid = vid.permute(1, 0, 2, 3, 4)
@@ -129,31 +139,34 @@ def test(data_loader, model,  device, criterion, metrics, config, logger=None):
 
             # clamp to 0-1
             output = torch.clamp(output, 0, 1)
+            gt = vid[:,near_frame_ids,...]
 
             # save some sample images
             if config.get('save_img', False):
                 scale_fc = len(ce_code)/sum(ce_code)
-                for k, (in_img, out_img, gt_img) in enumerate(zip(data, output, vid)):
+                for k, (in_img, out_img, gt_img) in enumerate(zip(data, output, gt)):
                     in_img = tensor2uint(in_img*scale_fc)
                     imsave(
                         in_img, f'{config.outputs_dir}input/ce-blur#{i*N+k+1:04d}.jpg')
-                    for j in range(len(ce_code)):
+                    for j in range(out_img.shape[0]):
                         out_img_j = tensor2uint(out_img[j])
                         gt_img_j = tensor2uint(gt_img[j])
                         imsave(
-                            out_img_j, f'{config.outputs_dir}output/out-frame#{i*N+k+1:04d}-{j+1:04d}.jpg')
+                            out_img_j, f'{config.outputs_dir}output/out-frame#{i*N+k+1:04d}-{time_ticks[j]:04d}.jpg')
                         imsave(
-                            gt_img_j, f'{config.outputs_dir}target/gt-frame#{i*N+k+1:04d}-{j+1:04d}.jpg')
+                            gt_img_j, f'{config.outputs_dir}target/gt-frame#{i*N+k+1:04d}-{time_ticks[j]:04d}.jpg')
                 # break  # save one image per batch
 
             # computing loss, metrics on test set
             output_all = torch.flatten(output, end_dim=1)
-            target_all = torch.flatten(vid[:,::interp_scale], end_dim=1)
+            target_all = torch.flatten(gt[:,::interp_scale], end_dim=1)
             # loss = criterion(output_all, target_all)
             batch_size = data.shape[0]
             # total_loss += loss.item() * batch_size
-            for i, metric in enumerate(metrics):
-                total_metrics[i] += metric(output_all, target_all) * batch_size
+            for m, metric in enumerate(metrics):
+                metric_batch_mean = metric(output_all, target_all)
+                logger.info(f"batch-{i+1:04d} mean {metric.__name__}: {metric_batch_mean}") # zzh: for psnr log
+                total_metrics[m] += metric_batch_mean * batch_size
     time_end = time.time()
     time_cost = time_end-time_start
     n_samples = len(data_loader.sampler)

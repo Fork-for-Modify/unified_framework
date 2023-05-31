@@ -76,7 +76,7 @@ def test(data_loader, model,  device, metrics, config):
     ce_code = ((torch.sign(ce_weight)+1)/2).int()
     time_idx = torch.tensor(range(len(ce_code)))/(len(ce_code)-1)
     time_idx = time_idx.unsqueeze(1).to(device)
-    scale_fc = 2
+    scale_fc = 8/5
 
     model_deblur.eval()
     time_start = time.time()

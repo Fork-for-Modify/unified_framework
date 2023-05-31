@@ -12,11 +12,11 @@ _target_: srcs.data_loader._my_video_data_loaders.get_data_loaders
 # data_dir: /ssd/zzh/dataset/WAIC_TSR_GT/easy/  # WAIC_TSR dataset | bicycle/
 # data_dir: /ssd/zzh/dataset/WAIC_TSR_GT/hard/  # WAIC_TSR dataset
 ## BBNCZ
-# data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/demo/
+# data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/demo/GOPR0384_11_00_f501-700/
 # data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/small_test/
 # data_dir: /ssd/0/zzh/dataset/GoPro/GOPRO_Large_all/test/
-# data_dir: /ssd/0/zzh/dataset/WAIC_TSR_GT/easy/running_women/  # WAIC_TSR dataset | bicycle/
-# data_dir: /ssd/0/zzh/dataset/WAIC_TSR_GT/hard/cheetah  # WAIC_TSR dataset
+# data_dir: /ssd/0/zzh/dataset/WAIC_TSR_GT/easy/  # WAIC_TSR dataset | bicycle/
+# data_dir: /ssd/0/zzh/dataset/WAIC_TSR_GT/hard/ # WAIC_TSR dataset
 ## BBNCR
 # data_dir: /data/zzh/dataset/CV/GoPro/GOPRO_Large_all/mini_test/ # video for debug
 # data_dir: /data/zzh/dataset/CV/GoPro/GOPRO_Large_all/small_test/ # video for debug
@@ -29,7 +29,8 @@ _target_: srcs.data_loader._my_video_data_loaders.get_data_loaders
 # data_dir: /ssd/2/zzh/dataset/WAIC_TSR_GT/easy/  # WAIC_TSR dataset | bicycle/
 # data_dir: /ssd/2/zzh/dataset/WAIC_TSR_GT/hard/  # WAIC_TSR dataset
 ## RealTest
-# data_dir: ${hydra:runtime.cwd}/dataset/real_data/test/
+data_dir: ${hydra:runtime.cwd}/dataset/simu_data/test/
+# data_dir: ${hydra:runtime.cwd}/dataset/real_data/zb1/
 
 frame_num: ${frame_n}
 batch_size: 1

@@ -13,8 +13,8 @@ from einops import rearrange
 
 # %% Param setting
 # path
-img_dirs = ["outputs/code_dev/BDNeRV_RC/test/2023-05-07_05-42-05/outputs/input",
-            "outputs/code_dev/BDNeRV_RC/test/2023-05-07_05-42-05/outputs/output"]
+img_dirs = ["outputs/code_dev/BDNeRV_RC/real_test/2023-05-29_15-09-50/outputs/input",
+            "outputs/code_dev/BDNeRV_RC/real_test/2023-05-29_15-09-50/outputs/output"]
 # "outputs/code_dev/BDNeRV_RC/test/2023-05-01_05-51-33/outputs/target"
 save_path = "./test.mp4"  # .gif / .avi / .mp4
 
@@ -29,7 +29,7 @@ margin = [30, 5]  # [height, width]
 n_row = 1  # number of rows in the montage
 
 # Set the frame rate and labels
-fps = 10
+fps = 8
 show_frame_idx = True
 vid_labels = ['ce', 'output'] # 'ce', 'output', 'gt'
 font_face, font_color, font_thickness, font_linetype = cv2.FONT_HERSHEY_SIMPLEX, (

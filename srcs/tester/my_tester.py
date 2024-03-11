@@ -35,7 +35,7 @@ def test_worker(gpus, config):
     # instantiate model
     model = instantiate(loaded_config.arch)
     logger.info(model)
-    
+
     if len(gpus) > 1:
         model = torch.nn.DataParallel(model, device_ids=gpus)
 
@@ -57,7 +57,7 @@ def test_worker(gpus, config):
 
     # setup data_loader instances
     data_loader = instantiate(config.test_data_loader)
-    
+
 
     # test
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -74,6 +74,9 @@ def test(data_loader, model,  device, criterion, metrics, config, logger):
     # init
     model = model.to(device)
 
+    # inference time test
+    input_shape = (1, 8, 3, 256, 256)  # test image size
+    gpu_inference_time(model, input_shape)
     # calc MACs & Param. Num
     model_complexity(model=model, input_shape=(8, 3, 256, 256), logger=logger)
 
@@ -98,7 +101,7 @@ def test(data_loader, model,  device, criterion, metrics, config, logger):
     with torch.no_grad():
         for i, vid in enumerate(tqdm(data_loader, desc='⏳ Testing')):
             # move vid to gpu, convert to 0-1 float
-            vid = vid.to(device).float()/255 
+            vid = vid.to(device).float()/255
             N, M, C, Hx, Wx = vid.shape
 
             # direct
